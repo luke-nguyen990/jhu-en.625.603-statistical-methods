@@ -1,0 +1,124 @@
+import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+from scipy import stats
+import scipy.stats
+import matplotlib.pyplot as plt
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import linregress
+
+
+class WeightSmokingDataframe:
+    df = None
+
+    def __init__(self):
+        file_path = 'weight_smoking.xlsx'
+        file_sheet_name = 'Data'
+        self.df = pd.read_excel(file_path, sheet_name=file_sheet_name)
+
+
+def part_1_solution():
+    weightSmoking = WeightSmokingDataframe()
+    print(weightSmoking.df[['birthweight', 'smoker', 'age', 'alcohol']].describe(
+        include='all'))
+    weightSmoking.df[['birthweight', 'smoker', 'age', 'alcohol']].hist(
+        bins=50, figsize=(10, 5))
+    average_birthweights = weightSmoking.df.groupby('smoker')[
+        'birthweight'].mean()
+    print(average_birthweights)
+
+    plt.tight_layout()
+    plt.show()
+
+
+def part_2_solution():
+    weightSmoking = WeightSmokingDataframe()
+    predictor_columns = weightSmoking.df.columns[1:12]
+
+    for column in predictor_columns:
+        slope, intercept, r_value, p_value, std_err = linregress(
+            weightSmoking.df[column], weightSmoking.df['birthweight'])
+        line = slope * weightSmoking.df[column] + intercept
+        plt.figure(figsize=(8, 6))
+        plt.scatter(weightSmoking.df[column],
+                    weightSmoking.df['birthweight'], label='Data')
+        plt.plot(weightSmoking.df[column], line, color='red',
+                 label='Fit: y = {:.2f}x + {:.2f}, r = {:.2f}'.format(slope, intercept, r_value))
+        plt.xlabel(column)
+        plt.ylabel('Birthweight')
+        plt.title('Birthweight vs ' + column)
+        plt.legend()
+        plt.show()
+
+
+def scatter_plot(x_col, y_col):
+    df = WeightSmokingDataframe().df
+    slope, intercept, r_value, p_value, std_err = linregress(
+        df[x_col], df[y_col])
+    line = slope * df[x_col] + intercept
+    plt.figure(figsize=(8, 6))
+    plt.scatter(df[x_col], df[y_col], label='Data')
+    plt.plot(df[x_col], line, color='red',
+             label='Fit: y = {:.2f}x + {:.2f}, r = {:.2f}'.format(slope, intercept, r_value))
+    plt.xlabel(x_col)
+    plt.ylabel(y_col)
+    plt.title(f'{y_col} vs {x_col}')
+    plt.legend()
+    plt.show()
+
+
+def part_2_solution_abcde():
+    scatter_plot("smoker", "birthweight")
+    scatter_plot("alcohol", "birthweight")
+    scatter_plot("nprevist", "birthweight")
+
+
+def part_2_solution_c():
+    df = WeightSmokingDataframe().df
+    df = sm.add_constant(df)
+    model_c = sm.OLS(df['birthweight'],
+                     df[['const', 'smoker', 'alcohol', 'nprevist']])
+    results_c = model_c.fit()
+    print(results_c.summary())
+
+
+def part_3_solution():
+    df = WeightSmokingDataframe().df
+    df = sm.add_constant(df)
+    model_c = sm.OLS(df['birthweight'],
+                     df[['const', 'smoker', 'alcohol', 'tripre0', 'tripre2', 'tripre3']])
+    results_c = model_c.fit()
+    print()
+    print(results_c.summary())
+
+
+def part_3a_solution():
+    weightSmoking = WeightSmokingDataframe()
+    print()
+    print(weightSmoking.df[['tripre0', 'tripre1', 'tripre2', 'tripre3']].describe(
+        include='all'))
+
+
+def part_4_solution():
+    df = WeightSmokingDataframe().df
+    df = sm.add_constant(df)
+    model_c = sm.OLS(df['birthweight'],
+                     df[['const', 'smoker', 'alcohol', 'nprevist', 'unmarried']])
+    results_c = model_c.fit()
+    print()
+    print(results_c.summary())
+
+
+def part_5_solution():
+    df = WeightSmokingDataframe().df
+    df = sm.add_constant(df)
+                     df[['const', 'age', 'educ']])
+    results_c=model_c.fit()
+    print()
+    print(results_c.summary())
+
+
+if __name__ == '__main__':
+    part_5_solution()
